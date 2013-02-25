@@ -1,3 +1,6 @@
+This branch is a backport of the latest Mongoid Slug to support Mongoid 2.x.  The only feature that was not able to be backported was support for localized slugs
+because Mongoid 2.x does not support localized array fields.
+
 *IMPORTANT:*  If you are upgrading to Mongoid Slug 1.0.0 please migrate in accordance with the instructions in https://github.com/digitalplaywright/mongoid-slug/wiki/How-to-upgrade-to-1.0.0-or-newer.
 Mongoid Slug 1.0.0  stores the slugs in a single field _slugs of array type, and all previous slugs must be migrated.
 
