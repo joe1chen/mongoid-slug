@@ -11,7 +11,7 @@ Mongoid Slug generates a URL slug or permalink based on one or more fields in a
 Mongoid model. It sits idly on top of [stringex] [1], supporting non-Latin
 characters.
 
-[![Build Status](https://secure.travis-ci.org/joe1chen/mongoid-slug.png)](http://travis-ci.org/joe1chen/mongoid-slug)
+[![Build Status](https://travis-ci.org/joe1chen/mongoid-slug.png?branch=mongoid2)](https://travis-ci.org/joe1chen/mongoid-slug)
 
 Installation
 ------------
