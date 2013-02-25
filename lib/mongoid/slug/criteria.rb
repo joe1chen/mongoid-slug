@@ -5,8 +5,8 @@ module Mongoid
     class Criteria < Mongoid::Criteria
       # Find the matchind document(s) in the criteria for the provided ids or slugs.
       #
-      # If the document _ids are of the type Moped::BSON::ObjectId, and all the supplied parameters are
-      # convertible to Moped::BSON::ObjectId (via Moped::BSON::ObjectId#from_string), finding will be
+      # If the document _ids are of the type BSON::ObjectId, and all the supplied parameters are
+      # convertible to BSON::ObjectId (via BSON::ObjectId#from_string), finding will be
       # performed via _ids.
       #
       # If the document has any other type of _id field, and all the supplied parameters are of the same
@@ -15,10 +15,10 @@ module Mongoid
       # Otherwise finding will be performed via slugs.
       #
       # @example Find by an id.
-      #   criteria.find(Moped::BSON::ObjectId.new)
+      #   criteria.find(BSON::ObjectId.new)
       #
       # @example Find by multiple ids.
-      #   criteria.find([ Moped::BSON::ObjectId.new, Moped::BSON::ObjectId.new ])
+      #   criteria.find([ BSON::ObjectId.new, BSON::ObjectId.new ])
       #
       # @example Find by a slug.
       #   criteria.find('some-slug')
@@ -30,7 +30,8 @@ module Mongoid
       #
       # @return [ Array<Document>, Document ] The matching document(s).
       def find(*args)
-        look_like_slugs?(args.__find_args__) ? find_by_slug!(*args) : super
+        #look_like_slugs?(args.__find_args__) ? find_by_slug!(*args) : super
+        look_like_slugs?(args.to_a) ? find_by_slug!(*args) : super
       end
 
       # Find the matchind document(s) in the criteria for the provided slugs.
@@ -45,9 +46,13 @@ module Mongoid
       #
       # @return [ Array<Document>, Document ] The matching document(s).
       def find_by_slug!(*args)
-        slugs = args.__find_args__
+        #slugs = args.__find_args__
+        slugs = args.to_a
         raise_invalid if slugs.any?(&:nil?)
-        for_slugs(slugs).execute_or_raise_for_slugs(slugs, args.multi_arged?)
+
+        multi_arged = args.size > 1
+        #for_slugs(slugs).execute_or_raise_for_slugs(slugs, args.multi_arged?)
+        for_slugs(slugs).execute_or_raise_for_slugs(slugs, multi_arged)
       end
 
       def look_like_slugs?(args)
@@ -69,7 +74,7 @@ module Mongoid
 
       # a string will not look like a slug if it looks like a legal ObjectId
       def objectid_slug_strategy id
-        Moped::BSON::ObjectId.legal?(id)
+        BSON::ObjectId.legal?(id)
       end
 
       # a string will always look like a slug
@@ -100,7 +105,8 @@ module Mongoid
         missing_slugs = slugs - result.map(&:slugs).flatten
 
         if !missing_slugs.blank? && Mongoid.raise_not_found_error
-          raise Errors::DocumentNotFound.new(klass, slugs, missing_slugs)
+          #raise Errors::DocumentNotFound.new(klass, slugs, missing_slugs)
+          raise Errors::DocumentNotFound.new(klass, missing_slugs)
         end
       end
     end

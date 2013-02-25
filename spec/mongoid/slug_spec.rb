@@ -76,8 +76,8 @@ module Mongoid
         }
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
-        bson_id = Moped::BSON::ObjectId.new.to_s
+      it "does not allow a BSON::ObjectId as use for a slug" do
+        bson_id = BSON::ObjectId.new.to_s
         bad = Book.create(:title => bson_id)
         bad.slugs.should_not include(bson_id)
       end
@@ -102,11 +102,11 @@ module Mongoid
           Book.find([book.id.to_s]).should eql [book]
         end
 
-        it "finds by id as Moped::BSON::ObjectId" do
+        it "finds by id as BSON::ObjectId" do
           Book.find(book.id).should eql book
         end
 
-        it "finds by id as an array of Moped::BSON::ObjectIds" do
+        it "finds by id as an array of BSON::ObjectIds" do
           Book.find([book.id]).should eql [book]
         end
 
@@ -136,7 +136,7 @@ module Mongoid
         dup.to_param.should eql "psychoanalysis-1"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = book.subjects.create(:name => "4ea0389f0364313d79104fb3")
         bad.slugs.should_not eql "4ea0389f0364313d79104fb3"
       end
@@ -160,11 +160,11 @@ module Mongoid
           book.subjects.find([subject.id.to_s]).should eql [subject]
         end
 
-        it "finds by id as Moped::BSON::ObjectId" do
+        it "finds by id as BSON::ObjectId" do
           book.subjects.find(subject.id).should eql subject
         end
 
-        it "finds by id as an array of Moped::BSON::ObjectIds" do
+        it "finds by id as an array of BSON::ObjectIds" do
           book.subjects.find([subject.id]).should eql [subject]
         end
 
@@ -203,7 +203,7 @@ module Mongoid
         dup.to_param.should eql "jane-smith-1"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = relationship.partners.create(:name => "4ea0389f0364313d79104fb3")
         bad.slugs.should_not eql "4ea0389f0364313d79104fb3"
       end
@@ -233,11 +233,11 @@ module Mongoid
           relationship.partners.find([partner.id.to_s]).should eql [partner]
         end
 
-        it "finds by id as Moped::BSON::ObjectId" do
+        it "finds by id as BSON::ObjectId" do
           relationship.partners.find(partner.id).should eql partner
         end
 
-        it "finds by id as an array of Moped::BSON::ObjectIds" do
+        it "finds by id as an array of BSON::ObjectIds" do
           relationship.partners.find([partner.id]).should eql [partner]
         end
 
@@ -280,7 +280,7 @@ module Mongoid
         dup2.to_param.should eql "gilles-deleuze-2"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = Author.create(:first_name => "4ea0389f0364",
                             :last_name => "313d79104fb3")
         bad.to_param.should_not eql "4ea0389f0364313d79104fb3"
@@ -347,7 +347,7 @@ module Mongoid
         dup.to_param.should eql "book-title-1"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = Book.create(:title => "4ea0389f0364313d79104fb3")
         bad.to_param.should_not eql "4ea0389f0364313d79104fb3"
       end
@@ -380,7 +380,7 @@ module Mongoid
         dup.to_param.should eql "gilles-deleuze-1"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = book.authors.create(:first_name => "4ea0389f0364",
                                   :last_name => "313d79104fb3")
         bad.to_param.should_not eql "4ea0389f0364313d79104fb3"
@@ -422,7 +422,7 @@ module Mongoid
         dup.to_param.should eql "big-weekly-1"
       end
 
-      it "does not allow a Moped::BSON::ObjectId as use for a slug" do
+      it "does not allow a BSON::ObjectId as use for a slug" do
         bad = Magazine.create(:title  => "4ea0389f0364313d79104fb3", :publisher_id => "abc123")
         bad.to_param.should_not eql "4ea0389f0364313d79104fb3"
       end
@@ -486,23 +486,28 @@ module Mongoid
       end
 
       after do
-        Author.remove_indexes
-        Book.remove_indexes
+        #Author.remove_indexes
+        #Book.remove_indexes
+        Author.collection.drop_indexes
+        Book.collection.drop_indexes
       end
 
       context "when slug is not scoped by a reference association" do
         it "defines an index on the slug" do
-          Book.index_options.should have_key( :_slugs => 1 )
+          #Book.index_options.should have_key( :_slugs => 1 )
+          Book.collection.index_information.should have_key "_slugs_1"
         end
 
         it "defines a unique index" do
-          Book.index_options[ :_slugs => 1 ][:unique].should be_true
+          #Book.index_options[ :_slugs => 1 ][:unique].should be_true
+          Book.index_information["_slugs_1"]["unique"].should be_true
         end
       end
 
       context "when slug is scoped by a reference association" do
         it "does not define an index on the slug" do
-          Author.index_options.should_not have_key(:_slugs => 1 )
+          #Author.index_options.should_not have_key(:_slugs => 1 )
+          Author.collection.index_information.should_not have_key "_slugs_1"
         end
       end
     end

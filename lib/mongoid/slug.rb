@@ -60,9 +60,11 @@ module Mongoid
         unless embedded?
           if slug_scope
             scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
-            index({scope_key => 1, _slugs: 1}, {unique: true})
+            #index({scope_key => 1, _slugs: 1}, {unique: true})
+            index [[:_slugs, Mongo::ASCENDING], [scope_key, Mongo::ASCENDING]], :unique => true
           else
-            index({_slugs: 1}, {unique: true})
+            #index({_slugs: 1}, {unique: true})
+            index :_slugs, :unique => true
           end
         end
 
@@ -83,7 +85,8 @@ module Mongoid
       end
 
       def look_like_slugs?(*args)
-        with_default_scope.look_like_slugs?(*args)
+        #with_default_scope.look_like_slugs?(*args)
+        queryable.look_like_slugs?(*args)
       end
 
       # Find documents by slugs.
@@ -104,7 +107,8 @@ module Mongoid
       #
       # @return [ Array<Document>, Document ] The matching document(s).
       def find_by_slug!(*args)
-        with_default_scope.find_by_slug!(*args)
+        #with_default_scope.find_by_slug!(*args)
+        queryable.find_by_slug!(*args)
       end
 
       def queryable

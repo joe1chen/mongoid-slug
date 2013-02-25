@@ -20,10 +20,12 @@ def database_id
 end
 
 Mongoid.configure do |config|
-  config.connect_to database_id
+  #config.connect_to database_id
+  config.master = Mongo::Connection.new.db(database_id)
 end
 
-Dir['./spec/models/*.rb'].each { |f| require f }
+models_path = File.expand_path '../../spec/models', __FILE__
+Dir["#{models_path}/*.rb"].each { |f| require f }
 
 RSpec.configure do |c|
   c.before(:each) do
