@@ -34,6 +34,6 @@ RSpec.configure do |c|
   end
 
   c.after(:suite) do
-    Mongoid::Threaded.sessions[:default].drop if ENV['CI']
+    #Mongoid::Threaded.sessions[:default].drop if ENV['CI']
   end
 end
