@@ -31,7 +31,7 @@ module Mongoid
       # @return [ Array<Document>, Document ] The matching document(s).
       def find(*args)
         #look_like_slugs?(args.__find_args__) ? find_by_slug!(*args) : super
-        look_like_slugs?(args.to_a) ? find_by_slug!(*args) : super
+        look_like_slugs?(Criteria::__find_args__(args)) ? find_by_slug!(*args) : super
       end
 
       # Find the matchind document(s) in the criteria for the provided slugs.
@@ -47,12 +47,35 @@ module Mongoid
       # @return [ Array<Document>, Document ] The matching document(s).
       def find_by_slug!(*args)
         #slugs = args.__find_args__
-        slugs = args.to_a
+        slugs = Criteria::__find_args__(args)
         raise_invalid if slugs.any?(&:nil?)
 
-        multi_arged = args.size > 1
         #for_slugs(slugs).execute_or_raise_for_slugs(slugs, args.multi_arged?)
-        for_slugs(slugs).execute_or_raise_for_slugs(slugs, multi_arged)
+        for_slugs(slugs).execute_or_raise_for_slugs(slugs, Criteria::args_multi_arged?(args))
+      end
+
+      def self.__find_args__(a)
+        if a.is_a? Array
+          a.flat_map{ |a| Criteria::__find_args__(a) }.uniq{ |a| a.to_s }
+        else
+          a
+        end
+      end
+
+      def self.args_multi_arged?(a)
+        if a.is_a? Array
+          !a.first.is_a?(Hash) && Criteria::args_resizable?(a.first) || a.size > 1
+        else
+          false
+        end
+      end
+
+      def self.args_resizable?(a)
+        if a.is_a?(Array) || a.is_a?(Hash)
+          true
+        else
+          false
+        end
       end
 
       def look_like_slugs?(args)
