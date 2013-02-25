@@ -235,6 +235,6 @@ unique = Mongoid::Slug::UniqueSlug.new(Book.new).find_unique(title)
 ```
 
 [1]: https://github.com/rsl/stringex/
-[2]: https://secure.travis-ci.org/hakanensari/mongoid-slug.png
-[3]: http://travis-ci.org/hakanensari/mongoid-slug
-[4]: https://github.com/digitalplaywright/mongoid-slug/blob/master/lib/mongoid/slug.rb
+[2]: https://secure.travis-ci.org/joe1chen/mongoid-slug.png
+[3]: http://travis-ci.org/joe1chen/mongoid-slug
+[4]: https://github.com/joe1chen/mongoid-slug/blob/master/lib/mongoid/slug.rb
