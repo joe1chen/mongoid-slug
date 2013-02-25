@@ -86,7 +86,7 @@ module Mongoid
 
       def look_like_slugs?(*args)
         #with_default_scope.look_like_slugs?(*args)
-        queryable.look_like_slugs?(*args)
+        criteria.look_like_slugs?(*args)
       end
 
       # Find documents by slugs.
@@ -108,11 +108,7 @@ module Mongoid
       # @return [ Array<Document>, Document ] The matching document(s).
       def find_by_slug!(*args)
         #with_default_scope.find_by_slug!(*args)
-        queryable.find_by_slug!(*args)
-      end
-
-      def queryable
-        scope_stack.last || Criteria.new(self) # Use Mongoid::Slug::Criteria for slugged documents.
+        criteria.find_by_slug!(*args)
       end
 
     end
