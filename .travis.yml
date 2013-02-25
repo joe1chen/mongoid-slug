@@ -2,7 +2,6 @@ language: ruby
 services: mongodb
 gemfile:
   - Gemfile
-  - Gemfile.mongoid4
 rvm:
   - 1.9.3
   - jruby-19mode
