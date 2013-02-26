@@ -857,8 +857,6 @@ module Mongoid
       end
     end
 
-    # mongoid2 does not support localized array fields, so these specs will not pass. Localized slugs are not supported.
-=begin
     context "slug can be localized" do
       it "generate a new slug for each localization" do
         old_locale = I18n.locale
@@ -1008,7 +1006,6 @@ module Mongoid
         I18n.locale = old_locale
       end
     end
-=end
 
     context "Mongoid paranoia with mongoid slug model" do
 
