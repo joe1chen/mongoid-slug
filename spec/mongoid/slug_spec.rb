@@ -536,6 +536,22 @@ module Mongoid
             AuthorPolymorphic.collection.index_information.should_not have_key "_type_1__slugs_1"
           end
         end
+
+        context "when the object has STI" do
+          it "scopes by the subclass" do
+            b = BookPolymorphic.create!(title: 'Book')
+            b.slug.should == 'book'
+
+            b2 = BookPolymorphic.create!(title: 'Book')
+            b2.slug.should == 'book-1'
+
+            c = ComicBookPolymorphic.create!(title: 'Book')
+            c.slug.should == 'book'
+
+            c = ComicBookPolymorphic.create!(title: 'Book')
+            c.slug.should == 'book-1'
+          end
+        end
       end
     end
 
