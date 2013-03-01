@@ -483,6 +483,9 @@ module Mongoid
       before do
         Author.create_indexes
         Book.create_indexes
+
+        AuthorPolymorphic.create_indexes
+        BookPolymorphic.create_indexes
       end
 
       after do
@@ -490,6 +493,9 @@ module Mongoid
         #Book.remove_indexes
         Author.collection.drop_indexes
         Book.collection.drop_indexes
+
+        AuthorPolymorphic.collection.drop_indexes
+        BookPolymorphic.collection.drop_indexes
       end
 
       context "when slug is not scoped by a reference association" do
@@ -508,6 +514,27 @@ module Mongoid
         it "does not define an index on the slug" do
           #Author.index_options.should_not have_key(:_slugs => 1 )
           Author.collection.index_information.should_not have_key "_slugs_1"
+        end
+      end
+
+      context "for polymorphic scope" do
+        context "when slug is not scoped by a reference association" do
+          it "defines an index on the slug" do
+            #Book.index_options.should have_key( :_slugs => 1 )
+            BookPolymorphic.collection.index_information.should have_key "_type_1__slugs_1"
+          end
+
+          it "defines a unique index" do
+            #Book.index_options[ :_slugs => 1 ][:unique].should be_true
+            BookPolymorphic.index_information["_type_1__slugs_1"]["unique"].should be_true
+          end
+        end
+
+        context "when slug is scoped by a reference association" do
+          it "does not define an index on the slug" do
+            #Author.index_options.should_not have_key(:_slugs => 1 )
+            AuthorPolymorphic.collection.index_information.should_not have_key "_type_1__slugs_1"
+          end
         end
       end
     end
