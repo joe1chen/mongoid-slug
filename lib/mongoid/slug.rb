@@ -9,7 +9,7 @@ module Mongoid
                      :slugged_attributes,
                      :url_builder,
                      :history,
-                     :scoped_by
+                     :by_model_type
 
       # field :_slugs, type: Array, default: [], localize: false
       # alias_attribute :slugs, :_slugs
@@ -54,7 +54,7 @@ module Mongoid
         self.reserved_words        = options[:reserve] || Set.new(["new", "edit"])
         self.slugged_attributes    = fields.map &:to_s
         self.history               = options[:history]
-        self.scoped_by             = options[:scoped_by]
+        self.by_model_type         = options[:by_model_type]
 
         field :_slugs, type: Array, default: [], localize: options[:localize]
         alias_attribute :slugs, :_slugs
@@ -63,7 +63,7 @@ module Mongoid
           if slug_scope
             scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
             #index({scope_key => 1, _slugs: 1}, {unique: true})
-            if options[:scoped_by] == :subclass
+            if options[:by_model_type] == true
               # Add _type to the index to fix polymorphism
               index [[:_type, Mongo::ASCENDING], [:_slugs, Mongo::ASCENDING], [scope_key, Mongo::ASCENDING]], :unique => true
             else
@@ -74,7 +74,7 @@ module Mongoid
             #index({_slugs: 1}, {unique: true})
 
             # Add _type to the index to fix polymorphism
-            if options[:scoped_by] == :subclass
+            if options[:by_model_type] == true
               index [[:_type, Mongo::ASCENDING], [:_slugs, Mongo::ASCENDING]], :unique => true
             else
               index [[:_slugs, Mongo::ASCENDING]], :unique => true
