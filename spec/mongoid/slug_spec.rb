@@ -7,17 +7,29 @@ module Mongoid
       Book.create(:title => "A Thousand Plateaus")
     end
 
-    context "when slug is validated for presence" do
-      let(:validation) {Validation.new}
+    context "should not persist incorrect slugs" do
+      it "slugs should not be generated from invalid documents" do
 
-      it "should be saved with title" do
-        validation.title = "test"
-        validation.save.should eql true
+        #this will fail now
+        x = IncorrectSlugPersistence.create!(name: "test")
+        x.slug.should == 'test'
+
+        #I believe this will now fail
+        x.name = 'te'
+        x.valid?
+        x.slug.should_not == 'te'
+
+        #I believe this will persist the 'te'
+        x.name = 'testb'
+        x.save!
+
       end
 
-      it "should not be saved without title" do
-        validation.save.should eql false
+      it "doesn't persist blank strings" do
+        book = Book.create!(:title => "")
+        book.reload.slugs.should be_empty
       end
+
     end
 
     context "when option skip_id_check is used with UUID _id " do
@@ -651,8 +663,8 @@ module Mongoid
       let!(:integer_id2) { IntegerId.new(:name => integer_id.id.to_s).tap { |d| d.id = 456; d.save } }
       let!(:string_id) { StringId.new(:name => "I have string ids").tap { |d| d.id = 'abc'; d.save } }
       let!(:string_id2) { StringId.new(:name => string_id.id.to_s).tap { |d| d.id = 'def'; d.save } }
-      let!(:subject) { Subject.create(:title  => "A Subject", :book => book) }
-      let!(:subject2) { Subject.create(:title  => "A Subject", :book => book2) }
+      let!(:subject) { Subject.create(:name  => "A Subject", :book => book) }
+      let!(:subject2) { Subject.create(:name  => "A Subject", :book => book2) }
       let!(:without_slug) { WithoutSlug.new().tap { |d| d.id = 456; d.save } }
 
       context "when the model does not use mongoid slugs" do
@@ -776,8 +788,8 @@ module Mongoid
       let!(:integer_id2) { IntegerId.new(:name => integer_id.id.to_s).tap { |d| d.id = 456; d.save } }
       let!(:string_id) { StringId.new(:name => "I have string ids").tap { |d| d.id = 'abc'; d.save } }
       let!(:string_id2) { StringId.new(:name => string_id.id.to_s).tap { |d| d.id = 'def'; d.save } }
-      let!(:subject) { Subject.create(:title  => "A Subject", :book => book) }
-      let!(:subject2) { Subject.create(:title  => "A Subject", :book => book2) }
+      let!(:subject) { Subject.create(:name  => "A Subject", :book => book) }
+      let!(:subject2) { Subject.create(:name  => "A Subject", :book => book2) }
 
       context "(single)" do
         context "and a document is found" do
@@ -841,17 +853,24 @@ module Mongoid
           book.to_param
           book.should_not be_persisted
         end
+
       end
 
       context "when called on an existing record with no slug" do
+        let!(:book_no_title) { Book.create() }
+
         before do
           Book.collection.insert(:title => "Proust and Signs")
         end
 
-        it "should return the id" do
+        it "should return the id if there is no slug" do
           book = Book.first
           book.to_param.should == book.id.to_s
           book.reload.slugs.should be_empty
+        end
+
+        it "should not persist the record" do
+          book_no_title.to_param.should == book_no_title._id.to_s
         end
       end
     end

@@ -1,11 +1,20 @@
 # CHANGELOG
 
+## 3.1.1
+
+### Bugfixes
+
+* do not generate empty slug. Resolves: #121, #122 (digitalplaywright)
+
 ## 3.1.0
 
 ### New Features 
 
-* update slug moved to before validation (simi)
 * optionally slugs are created and found per model type (joe1chen)
+
+### Bugfixes
+
+* fix issue with default scope and slug uniqueness (loopj)
 
 ## 3.0.0
 

@@ -93,9 +93,9 @@ module Mongoid
         #-- always create slug on create
         #-- do not create new slug on update if the slug is permanent
         if options[:permanent]
-          set_callback :validation, :before, :build_slug, :if => :new_record?
+          set_callback :create, :before, :build_slug
         else
-          set_callback :validation, :before, :build_slug, :if => :slug_should_be_rebuilt?
+          set_callback :save, :before, :build_slug, :if => :slug_should_be_rebuilt?
         end
       end
 
@@ -140,13 +140,21 @@ module Mongoid
     # @return [true]
     def build_slug
       _new_slug = find_unique_slug
+
+      #skip slug generation and use Mongoid id
+      #to find document instead
+      return true if _new_slug.size == 0
+
       self._slugs.delete(_new_slug) if self._slugs
+
       if !!self.history && self._slugs.is_a?(Array)
         self._slugs << _new_slug
       else
         self._slugs = [_new_slug]
       end
+
       true
+
     end
 
     # Finds a unique slug, were specified string used to generate a slug.

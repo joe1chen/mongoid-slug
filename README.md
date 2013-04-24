@@ -10,7 +10,7 @@ Mongoid Slug generates a URL slug or permalink based on one or more fields in a
 Mongoid model. It sits idly on top of [stringex] [1], supporting non-Latin
 characters.
 
-[![Build Status](https://travis-ci.org/joe1chen/mongoid-slug.png?branch=mongoid2)](https://travis-ci.org/joe1chen/mongoid-slug)
+[![Build Status](https://travis-ci.org/joe1chen/mongoid-slug.png?branch=mongoid2)](http://travis-ci.org/digitalplaywright/mongoid-slug) [![Dependency Status](https://gemnasium.com/digitalplaywright/mongoid-slug.png)](https://gemnasium.com/digitalplaywright/mongoid-slug) [![Code Climate](https://codeclimate.com/github/digitalplaywright/mongoid-slug.png)](https://codeclimate.com/github/digitalplaywright/mongoid-slug)
 
 Installation
 ------------
@@ -237,13 +237,13 @@ Specifying an array of custom reserved words will overwrite these defaults.
 Localize Slug
 --------------
 
-The slug can be localized: 
+The slug can be localized:
 
 ```ruby
 class PageSlugLocalize
   include Mongoid::Document
   include Mongoid::Slug
-  
+
   field :title, localize: true
   slug  :title, localize: true
 end
@@ -252,7 +252,7 @@ end
 This feature is built upon Mongoid localized fields, so fallbacks and localization
 works as documented in the Mongoid manual.
 
-PS! A migration is needed to use Mongoid localized fields for documents that was created when this 
+PS! A migration is needed to use Mongoid localized fields for documents that was created when this
 feature was off. Anything else will cause errors.
 
 Custom Find Strategies
