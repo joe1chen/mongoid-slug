@@ -62,21 +62,22 @@ module Mongoid
         unless embedded?
           if slug_scope
             scope_key = (metadata = self.reflect_on_association(slug_scope)) ? metadata.key : slug_scope
-            #index({scope_key => 1, _slugs: 1}, {unique: true})
             if options[:by_model_type] == true
               # Add _type to the index to fix polymorphism
+              # index({ _type: 1, scope_key => 1, _slugs: 1}, {unique: true}) # Mongoid3
               index [[:_type, Mongo::ASCENDING], [:_slugs, Mongo::ASCENDING], [scope_key, Mongo::ASCENDING]], :unique => true
             else
+              # index({scope_key => 1, _slugs: 1}, {unique: true}) # Mongoid3
               index [[:_slugs, Mongo::ASCENDING], [scope_key, Mongo::ASCENDING]], :unique => true
             end
 
           else
-            #index({_slugs: 1}, {unique: true})
-
             # Add _type to the index to fix polymorphism
             if options[:by_model_type] == true
+              # index({_type: 1, _slugs: 1}, {unique: true}) # Mongoid3
               index [[:_type, Mongo::ASCENDING], [:_slugs, Mongo::ASCENDING]], :unique => true
             else
+              # index({_slugs: 1}, {unique: true}) # Mongoid3
               index [[:_slugs, Mongo::ASCENDING]], :unique => true
             end
           end
@@ -99,7 +100,7 @@ module Mongoid
       end
 
       def look_like_slugs?(*args)
-        #with_default_scope.look_like_slugs?(*args)
+        # with_default_scope.look_like_slugs?(*args) # Mongoid3
         criteria.look_like_slugs?(*args)
       end
 
@@ -121,9 +122,16 @@ module Mongoid
       #
       # @return [ Array<Document>, Document ] The matching document(s).
       def find_by_slug!(*args)
-        #with_default_scope.find_by_slug!(*args)
+        # with_default_scope.find_by_slug!(*args) # Mongoid3
         criteria.find_by_slug!(*args)
       end
+
+      # Mongoid3
+=begin
+      def queryable
+        scope_stack.last || Criteria.new(self) # Use Mongoid::Slug::Criteria for slugged documents.
+      end
+=end
 
     end
 

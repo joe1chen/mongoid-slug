@@ -502,8 +502,12 @@ module Mongoid
       end
 
       after do
-        #Author.remove_indexes
-        #Book.remove_indexes
+        # Author.remove_indexes # Mongoid3
+        # Book.remove_indexes # Mongoid3
+
+        # AuthorPolymorphic.remove_indexes # Mongoid3
+        # BookPolymorphic.remove_indexes # Mongoid3
+        
         Author.collection.drop_indexes
         Book.collection.drop_indexes
 
@@ -513,19 +517,19 @@ module Mongoid
 
       context "when slug is not scoped by a reference association" do
         it "defines an index on the slug" do
-          #Book.index_options.should have_key( :_slugs => 1 )
+          # Book.index_options.should have_key( :_slugs => 1 ) # Mongoid3
           Book.collection.index_information.should have_key "_slugs_1"
         end
 
         it "defines a unique index" do
-          #Book.index_options[ :_slugs => 1 ][:unique].should be_true
+          # Book.index_options[ :_slugs => 1 ][:unique].should be_true # Mongoid3
           Book.index_information["_slugs_1"]["unique"].should be_true
         end
       end
 
       context "when slug is scoped by a reference association" do
         it "does not define an index on the slug" do
-          #Author.index_options.should_not have_key(:_slugs => 1 )
+          # Author.index_options.should_not have_key(:_slugs => 1 ) # Mongoid3
           Author.collection.index_information.should_not have_key "_slugs_1"
         end
       end
@@ -533,19 +537,19 @@ module Mongoid
       context "for subclass scope" do
         context "when slug is not scoped by a reference association" do
           it "defines an index on the slug" do
-            #Book.index_options.should have_key( :_slugs => 1 )
+            # Book.index_options.should have_key( :_slugs => 1 ) # Mongoid3
             BookPolymorphic.collection.index_information.should have_key "_type_1__slugs_1"
           end
 
           it "defines a unique index" do
-            #Book.index_options[ :_slugs => 1 ][:unique].should be_true
+            # Book.index_options[ :_slugs => 1 ][:unique].should be_true # Mongoid3
             BookPolymorphic.index_information["_type_1__slugs_1"]["unique"].should be_true
           end
         end
 
         context "when slug is scoped by a reference association" do
           it "does not define an index on the slug" do
-            #Author.index_options.should_not have_key(:_slugs => 1 )
+            # Author.index_options.should_not have_key(:_slugs => 1 ) # Mongoid3
             AuthorPolymorphic.collection.index_information.should_not have_key "_type_1__slugs_1"
           end
         end

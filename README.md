@@ -141,7 +141,7 @@ class Employee
 end
 ```
 
-Single-Table Inheritance (STI) and Scoping
+Optionally find and create slugs per model type
 -------
 
 By default when using STI, the scope will be around the super-class.
@@ -165,7 +165,7 @@ comic_book = ComicBook.create(:title => "Anti Oedipus")
 comic_book.slugs.should_not eql(book.slugs)
 ```
 
-If you want the scope to be around the subclass, then set the option :by_model_type => true
+If you want the scope to be around the subclass, then set the option :by_model_type => true.
 
 ```ruby
 class Book
